@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  // A grid item; without this the tab row would widen the page instead of scrolling.
+  min-width: 0;
+}
+
+.nav {
+  position: sticky;
+  top: calc(var(--topbar-height) + 20px);
+}
+
+.items {
+  display: grid;
+  gap: 2px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 12px;
+  color: var(--ink-2);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-control);
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out;
+
+  &:hover {
+    color: var(--ink);
+    background: var(--bezel);
+  }
+
+  &.is-active {
+    color: var(--ink);
+    background: var(--bezel-raised);
+
+    app-icon {
+      color: var(--info);
+    }
+  }
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge {
+  min-width: 22px;
+  padding: 1px 7px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  border-radius: 999px;
+}
+
+.badge--caution {
+  color: var(--on-caution);
+  background: var(--caution);
+}
+
+.badge--info {
+  color: var(--info);
+  background: var(--info-track);
+}
+
+// Narrow screens: one scrolling row of tabs under the top bar.
+@media (max-width: 960px) {
+  .nav {
+    // Relative, so the hidden badge text is positioned (and clipped) inside the scroller.
+    position: relative;
+    top: auto;
+    margin: 0 calc(var(--gap) * -1);
+    padding: 0 var(--gap);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .items {
+    display: flex;
+    gap: 4px;
+    width: max-content;
+  }
+
+  .item {
+    gap: 8px;
+    min-height: 38px;
+    white-space: nowrap;
+  }
+}

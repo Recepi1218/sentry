@@ -1,0 +1,210 @@
+:host {
+  display: block;
+}
+
+.remaining {
+  display: grid;
+  gap: 4px;
+}
+
+.remaining-value {
+  font-size: var(--t-hero);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+.remaining-label {
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.severity {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+
+  &[data-severity='normal'] {
+    color: var(--normal);
+  }
+
+  &[data-severity='warning'] {
+    color: var(--caution);
+  }
+
+  &[data-severity='critical'] {
+    color: var(--warning);
+  }
+}
+
+// Severity drives one ramp: fill, the lighter "held" step and the track.
+[data-severity='normal'] {
+  --fill: var(--info-mark);
+  --held: var(--info-held);
+  --track: var(--info-track);
+}
+
+[data-severity='warning'] {
+  --fill: var(--caution-mark);
+  --held: var(--caution-held);
+  --track: var(--caution-track);
+}
+
+[data-severity='critical'] {
+  --fill: var(--warning-mark);
+  --held: var(--warning-held);
+  --track: var(--warning-track);
+}
+
+.meter {
+  position: relative;
+  display: flex;
+  gap: 2px;
+  height: 10px;
+  margin-top: 16px;
+  overflow: hidden;
+  background: var(--track);
+  border-radius: 999px;
+}
+
+.meter-settled,
+.meter-reserved {
+  flex: none;
+  height: 100%;
+}
+
+.meter-settled {
+  background: var(--fill);
+  border-radius: 999px 0 0 999px;
+}
+
+.meter-reserved {
+  background: var(--held);
+}
+
+.meter-warn {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink-2);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 10px;
+  font-size: var(--t-xs);
+
+  div {
+    display: flex;
+    gap: 6px;
+  }
+
+  dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ink-3);
+  }
+
+  dd {
+    color: var(--ink);
+  }
+}
+
+.swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+.swatch--settled {
+  background: var(--fill);
+}
+
+.swatch--reserved {
+  background: var(--held);
+}
+
+.swatch--warn {
+  width: 2px;
+  background: var(--ink-2);
+}
+
+.categories {
+  display: grid;
+  gap: 14px;
+}
+
+.category {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 12px;
+}
+
+.category-label {
+  color: var(--ink-2);
+}
+
+.category-value {
+  text-align: right;
+}
+
+.category-held {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.bar {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: 2px;
+  height: 6px;
+  overflow: hidden;
+  background: var(--info-track);
+  border-radius: 999px;
+}
+
+.bar-settled {
+  background: var(--info-mark);
+  border-radius: 999px 0 0 999px;
+}
+
+.bar-reserved {
+  background: var(--info-held);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+
+  dt {
+    color: var(--ink-3);
+    font-size: var(--t-xs);
+  }
+
+  dd {
+    margin-top: 2px;
+    font-size: var(--t-md);
+    font-weight: 550;
+  }
+}
+
+.runway {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--ink-2);
+  font-size: var(--t-xs);
+}

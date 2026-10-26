@@ -1,0 +1,98 @@
+:host {
+  display: block;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+.layout {
+  display: grid;
+  gap: 8px 40px;
+}
+
+@container (min-width: 680px) {
+  .layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .costs > .subhead:first-child {
+    margin-top: 0;
+  }
+}
+
+.statement {
+  display: grid;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 0;
+
+  dt {
+    color: var(--ink-2);
+  }
+
+  dd {
+    white-space: nowrap;
+  }
+}
+
+.total {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  dt,
+  dd {
+    color: var(--ink);
+    font-weight: 600;
+  }
+}
+
+.note {
+  margin-left: 6px;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.result {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule-strong);
+
+  dt,
+  dd {
+    color: var(--normal);
+    font-size: var(--t-md);
+    font-weight: 600;
+  }
+
+  &.loss dt,
+  &.loss dd {
+    color: var(--warning);
+  }
+}
+
+.footnote {
+  margin-top: 8px;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.compact td {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+
+.plan {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}

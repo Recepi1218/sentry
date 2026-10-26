@@ -1,0 +1,98 @@
+<div class="org">
+  <ul class="summary" aria-label="Status för alla agenter">
+    @for (item of summary(); track item.status) {
+      <li class="summary-item">
+        <span [class]="'lamp lamp--' + item.tone"></span>
+        <span class="summary-count">{{ item.count }}</span>
+        <span class="summary-label">{{ item.label }}</span>
+      </li>
+    }
+  </ul>
+
+  <div class="top">
+    <div class="operator">
+      <p class="operator-name">Sentry</p>
+      <p class="operator-facts">
+        <span [class]="'tone-' + operatorState().tone">{{ operatorState().label }}</span>
+        @if (pendingApprovals() > 0) {
+          <a class="operator-link" routerLink="/forslag"
+            >{{ pendingApprovals() }} förslag väntar på dig</a
+          >
+        }
+      </p>
+    </div>
+
+    @for (agent of oversight(); track agent.id) {
+      <div class="oversight">
+        <app-agent-card
+          [agent]="agent"
+          [selected]="selectedId() === agent.id"
+          (pick)="toggle(agent.id)"
+        />
+      </div>
+    }
+  </div>
+
+  @if (selected(); as agent) {
+    @if (agent.rank === 'OVERSIGHT') {
+      <app-agent-detail id="agent-detail" [agent]="agent" (dismiss)="selectedId.set(null)" />
+    }
+  }
+
+  <div class="divisions">
+    @for (division of divisions(); track division.id) {
+      <section class="division" [attr.aria-labelledby]="'division-' + division.id">
+        <div class="division-head">
+          <h3 class="division-name" [id]="'division-' + division.id">{{ division.name }}</h3>
+          <p class="division-facts">
+            {{ division.working }} av {{ division.total }} arbetar,
+            {{ division.spendOre | sek: 'auto' }} denna vecka
+          </p>
+        </div>
+        <p class="division-scope">{{ division.scope }}</p>
+
+        @if (division.chief; as chief) {
+          <div class="chief">
+            <app-agent-card
+              [agent]="chief"
+              [selected]="selectedId() === chief.id"
+              (pick)="toggle(chief.id)"
+            />
+          </div>
+        }
+
+        <div
+          class="teams"
+          [class.has-chief]="division.chief !== null"
+          [style.--cols]="division.teams.length"
+        >
+          @for (team of division.teams; track team.name) {
+            <div class="team">
+              <h4 class="team-name">
+                {{ team.name }}
+                <span class="team-count">{{ team.working }}/{{ team.agents.length }} arbetar</span>
+              </h4>
+              <ul class="team-agents">
+                @for (agent of team.agents; track agent.id) {
+                  <li>
+                    <app-agent-card
+                      [agent]="agent"
+                      [selected]="selectedId() === agent.id"
+                      (pick)="toggle(agent.id)"
+                    />
+                  </li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+
+        @if (selected(); as agent) {
+          @if (agent.rank !== 'OVERSIGHT' && agent.division === division.id) {
+            <app-agent-detail id="agent-detail" [agent]="agent" (dismiss)="selectedId.set(null)" />
+          }
+        }
+      </section>
+    }
+  </div>
+</div>

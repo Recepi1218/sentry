@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  max-width: 1760px;
+  margin: 0 auto;
+  padding: 24px var(--gap) 48px;
+}
+
+.main {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
+  outline: none;
+}
+
+.waiting {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-2);
+}
+
+.connect {
+  display: grid;
+  place-items: start center;
+  padding: 64px var(--gap);
+  outline: none;
+}
+
+@media (max-width: 960px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding-top: 12px;
+  }
+}

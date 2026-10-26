@@ -1,0 +1,141 @@
+<section class="strip" [attr.data-view]="view()" aria-labelledby="switch-title">
+  <h2 class="visually-hidden" id="switch-title">Huvudbrytare</h2>
+
+  <div
+    class="toggle"
+    aria-hidden="true"
+    [attr.data-guard]="guardPosition()"
+    [attr.data-lever]="leverPosition()"
+  >
+    <span class="track"><span class="knob"></span></span>
+    <span class="guard"></span>
+  </div>
+
+  <div class="state" role="status">
+    <p class="word">
+      @if (view() === 'armed') {
+        <span class="live" aria-hidden="true"></span>
+      }
+      {{ copy().word }}
+    </p>
+    <p class="text">
+      {{ copy().text }}
+      @if (view() === 'locked' || view() === 'armed') {
+        @if (store.control(); as control) {
+          <span class="meta">
+            ”{{ control.reason }}”, {{ control.changedAt | clock }} av
+            {{ byActor(control.changedBy) }}
+          </span>
+        }
+      }
+    </p>
+  </div>
+
+  <div class="actions">
+    @switch (view()) {
+      @case ('locked') {
+        @if (guardLifted()) {
+          <form class="arm" novalidate (submit)="arm($event)">
+            <div class="field">
+              <label class="visually-hidden" for="arm-reason">Anledning, sparas i loggen</label>
+              <input
+                id="arm-reason"
+                type="text"
+                autocomplete="off"
+                placeholder="Anledning, sparas i loggen"
+                aria-describedby="guard-hint"
+                [formField]="reasonForm.reason"
+              />
+            </div>
+            <button class="btn btn--arm" type="submit" data-primary>
+              <app-icon name="power" />Aktivera systemet
+            </button>
+            <button class="btn btn--quiet" type="button" (click)="lowerGuard()">
+              Fäll ned skyddet
+            </button>
+            <p class="hint" id="guard-hint">
+              Skyddet fälls ned av sig självt om {{ guardSecondsLeft() }} s.
+            </p>
+            @if (reasonForm.reason().touched()) {
+              @for (error of reasonForm.reason().errors(); track $index) {
+                <p class="field-error">{{ error.message }}</p>
+              }
+            }
+          </form>
+        } @else {
+          <ul class="checks" id="preflight" aria-label="Förkontroll före aktivering">
+            @for (check of store.armChecks(); track check.id) {
+              <li class="check" [class.is-ok]="check.ok" [title]="check.detail">
+                <app-icon [name]="check.ok ? 'check' : 'alert'" />
+                {{ check.label }}
+                <span class="visually-hidden"
+                  >: {{ check.ok ? 'klar' : 'inte klar' }}. {{ check.detail }}</span
+                >
+              </li>
+            }
+          </ul>
+          <button
+            class="btn"
+            type="button"
+            data-primary
+            aria-describedby="preflight"
+            [disabled]="!store.canArm()"
+            (click)="liftGuard()"
+          >
+            Lyft skyddet
+          </button>
+        }
+      }
+
+      @case ('armed') {
+        <p class="hint">Pågående anrop slutförs inom sina reservationer.</p>
+        <button class="btn btn--stop" type="button" data-primary (click)="lock()">
+          <app-icon name="stop" />Lås systemet
+        </button>
+      }
+
+      @case ('arming') {
+        <p class="pending">
+          <span class="spinner" aria-hidden="true"></span>Väntar på {{ backend }}
+        </p>
+        <button class="btn btn--stop" type="button" data-primary (click)="lock()">
+          <app-icon name="stop" />Avbryt och lås
+        </button>
+      }
+
+      @case ('locking') {
+        <p class="pending">
+          <span class="spinner" aria-hidden="true"></span>Låser. Väntar på {{ backend }}.
+        </p>
+      }
+
+      @case ('unknown') {
+        <button class="btn btn--quiet" type="button" (click)="store.refresh()">
+          <app-icon name="refresh" />Hämta läget igen
+        </button>
+        <button class="btn btn--stop" type="button" data-primary (click)="lock()">
+          <app-icon name="stop" />Lås systemet
+        </button>
+      }
+    }
+  </div>
+
+  @if (failure(); as failed) {
+    <div class="failure" role="alert">
+      @if (failed.action === 'LOCK') {
+        <p>
+          <strong>Låsningen kunde inte bekräftas.</strong> {{ failed.message }} Systemet kan
+          fortfarande vara aktivt.
+        </p>
+        <button class="btn btn--stop btn--sm" type="button" (click)="lock()">
+          Försök låsa igen
+        </button>
+      } @else {
+        <p><strong>Aktiveringen gick inte igenom.</strong> {{ failed.message }}</p>
+        <button class="btn btn--quiet btn--sm" type="button" (click)="store.dismissCommandError()">
+          <app-icon name="close" />Stäng
+        </button>
+      }
+    </div>
+  }
+</section>

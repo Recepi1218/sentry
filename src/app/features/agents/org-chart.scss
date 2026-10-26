@@ -1,0 +1,342 @@
+:host {
+  display: block;
+  min-width: 0;
+  container: org / inline-size;
+}
+
+// Connector lines between levels of the chart.
+$line: var(--rule-strong);
+$gap: 20px;
+$team-gap: 14px;
+
+.org {
+  display: grid;
+  gap: $gap;
+}
+
+// ── Status summary ────────────────────────────────────────────────────────────
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.summary-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 14px;
+  background: var(--bezel);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+
+.summary-count {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-label {
+  color: var(--ink-2);
+  font-size: var(--t-xs);
+}
+
+// ── You, and Sentinel beside you ──────────────────────────────────────────────
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px) minmax(0, 1fr);
+  align-items: center;
+  gap: $gap;
+}
+
+.operator {
+  grid-column: 2;
+  padding: 16px 20px;
+  text-align: center;
+  background: var(--bezel);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+}
+
+.operator-name {
+  font-size: var(--t-lg);
+  font-weight: 650;
+}
+
+.operator-role {
+  color: var(--ink-2);
+  font-size: var(--t-xs);
+}
+
+.operator-facts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin-top: 8px;
+  font-size: var(--t-xs);
+  font-weight: 550;
+}
+
+.tone-neutral {
+  color: var(--ink-3);
+}
+
+.operator-link {
+  color: var(--caution);
+  text-underline-offset: 3px;
+}
+
+.oversight {
+  position: relative;
+  grid-column: 3;
+  max-width: 300px;
+
+  // A dashed line: Sentinel answers to you, outside the chain of command.
+  &::before {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: $gap;
+    border-top: 1px dashed $line;
+    content: '';
+  }
+}
+
+// ── Divisions ────────────────────────────────────────────────────────────────
+
+.divisions {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: $gap;
+  padding-top: 16px;
+
+  // Down from you, then across to both chiefs.
+  &::before {
+    position: absolute;
+    top: -$gap;
+    left: 50%;
+    height: $gap + 16px;
+    border-left: 1px solid $line;
+    content: '';
+  }
+
+  &::after {
+    position: absolute;
+    top: 16px;
+    right: calc(25% - #{$gap * 0.25});
+    left: calc(25% - #{$gap * 0.25});
+    border-top: 1px solid $line;
+    content: '';
+  }
+}
+
+.division {
+  position: relative;
+  min-width: 0;
+  margin-top: 16px;
+  padding: 18px 20px 20px;
+  background: var(--bezel);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  container-type: inline-size;
+
+  &::before {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    height: 16px;
+    border-left: 1px solid $line;
+    content: '';
+  }
+}
+
+.division-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+.division-name {
+  font-size: var(--t-md);
+  font-weight: 650;
+}
+
+.division-facts {
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.division-scope {
+  max-width: 72ch;
+  margin-top: 4px;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.chief {
+  width: min(100%, 340px);
+  margin: 18px auto 0;
+}
+
+// ── Teams under the chief ────────────────────────────────────────────────────
+
+.teams {
+  --cols: 3;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  align-items: start;
+  gap: $team-gap;
+  margin-top: 18px;
+
+  &.has-chief {
+    margin-top: 0;
+    padding-top: 32px;
+
+    &::before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      height: 16px;
+      border-left: 1px solid $line;
+      content: '';
+    }
+
+    // Across from the centre of the first team to the centre of the last.
+    &::after {
+      position: absolute;
+      top: 16px;
+      right: calc((100% - (var(--cols) - 1) * #{$team-gap}) / var(--cols) / 2);
+      left: calc((100% - (var(--cols) - 1) * #{$team-gap}) / var(--cols) / 2);
+      border-top: 1px solid $line;
+      content: '';
+    }
+
+    .team::before {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      height: 16px;
+      border-left: 1px solid $line;
+      content: '';
+    }
+  }
+}
+
+.team {
+  position: relative;
+  min-width: 0;
+}
+
+.team-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 8px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+  color: var(--ink-2);
+  font-size: var(--t-xs);
+  font-weight: 600;
+}
+
+.team-count {
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+.team-agents {
+  display: grid;
+  gap: 8px;
+}
+
+// Narrow division: teams stack, and their cards share the width.
+@container (max-width: 700px) {
+  .teams {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+
+    &.has-chief {
+      padding-top: 24px;
+
+      &::before {
+        height: 24px;
+      }
+
+      &::after,
+      .team::before {
+        display: none;
+      }
+    }
+  }
+
+  .team-agents {
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  }
+}
+
+@container (max-width: 440px) {
+  .team-agents {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+// Narrow page: divisions stack and the tree reads top to bottom.
+@container org (max-width: 1100px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .operator,
+  .oversight {
+    grid-column: auto;
+    max-width: none;
+  }
+
+  .operator {
+    text-align: left;
+  }
+
+  .operator-facts {
+    justify-content: flex-start;
+  }
+
+  .divisions {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 0;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .division {
+    margin-top: 0;
+
+    &::before {
+      display: none;
+    }
+  }
+}
+
+@container org (max-width: 560px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .oversight::before {
+    display: none;
+  }
+}

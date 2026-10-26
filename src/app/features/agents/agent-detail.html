@@ -1,0 +1,65 @@
+<section class="detail" aria-labelledby="agent-detail-title">
+  <div class="detail-head">
+    <div>
+      <h3 class="detail-title" id="agent-detail-title">
+        {{ agent().codename }} <span class="detail-role">{{ agent().role }}</span>
+      </h3>
+      <p class="detail-rank">{{ rank() }}, rapporterar till {{ manager() }}</p>
+    </div>
+    <button class="btn btn--quiet btn--sm" type="button" (click)="dismiss.emit()">
+      <app-icon name="close" />Stäng
+    </button>
+  </div>
+
+  <dl class="facts">
+    <div>
+      <dt>Status</dt>
+      <dd [class]="'tone-' + status().tone">{{ status().label }}</dd>
+    </div>
+    <div>
+      <dt>Modell</dt>
+      <dd>{{ model() }}</dd>
+    </div>
+    <div>
+      <dt>Uppgifter denna vecka</dt>
+      <dd>{{ agent().weekTasks }}</dd>
+    </div>
+    <div>
+      <dt>Kostnad denna vecka</dt>
+      <dd>{{ agent().weekSpendOre | sek: 'auto' }}</dd>
+    </div>
+  </dl>
+
+  @if (agent().currentTask; as task) {
+    <p class="current">
+      Pågår: {{ task.title }}. Reserverat {{ task.reservedOre | sek: 'auto' }}.
+    </p>
+  } @else {
+    <p class="idle">{{ activity() }}</p>
+  }
+
+  @if (reports().length > 0) {
+    <p class="reports">
+      Leder {{ reports().length }} agenter:
+      @for (report of reports(); track report.id; let last = $last) {
+        {{ report.codename }}{{ last ? '.' : ',' }}
+      }
+    </p>
+  }
+
+  <h4 class="subhead">Senaste uppgifterna</h4>
+  <ol class="tasks">
+    @for (task of agent().history; track task.id) {
+      <li class="task">
+        <span class="task-time">{{ task.finishedAt | clock }}</span>
+        <span class="task-title">{{ task.title }}</span>
+        <span [class]="'task-outcome tone-' + outcomes[task.outcome].tone">{{
+          outcomes[task.outcome].label
+        }}</span>
+        <span class="task-cost">{{ task.costOre | sek: 'auto' }}</span>
+      </li>
+    } @empty {
+      <li class="empty">Ingen historik än den här veckan.</li>
+    }
+  </ol>
+</section>

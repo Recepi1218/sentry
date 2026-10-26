@@ -1,0 +1,123 @@
+<section class="panel" aria-labelledby="orders-title">
+  <div class="panel-head">
+    <h3 class="panel-title" id="orders-title">
+      {{ detailed() ? 'Ordrar och marginal per order' : 'Ordrar' }}
+    </h3>
+    <p class="panel-note">{{ simulated ? 'Simulerad Stripe-koppling' : 'Från Stripe via n8n' }}</p>
+  </div>
+
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Ordertabell">
+    <table class="table">
+      <caption>
+        @if (detailed()) {
+          Täckningsbidrag är nettopris minus Stripe-avgift, inköp, frakt och annonskostnad som
+          tillskrivs ordern.
+        } @else {
+          Kostnader är Stripe-avgift, inköp, frakt och annons. Vinsten räknas på priset utan moms.
+        }
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Tid</th>
+          <th scope="col">Produkt</th>
+          @if (detailed()) {
+            <th scope="col" class="num">Betalt</th>
+            <th scope="col" class="num">Moms</th>
+            <th scope="col" class="num">Stripe</th>
+            <th scope="col" class="num">Inköp och frakt</th>
+            <th scope="col" class="num">Annons</th>
+            <th scope="col" class="num">Täckningsbidrag</th>
+            <th scope="col">Marginal</th>
+          } @else {
+            <th scope="col" class="num">Kostnader</th>
+            <th scope="col" class="num">Vinst/förlust</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of rows(); track row.order.id) {
+          <tr [class.fresh]="row.fresh" [class.refunded]="row.order.status === 'REFUNDED'">
+            <td class="time">{{ row.when }}</td>
+            @if (detailed()) {
+              <td class="product">
+                <span class="product-title">{{ row.order.productTitle }}</span>
+                <span class="product-meta">
+                  {{ row.order.productKind === 'DIGITAL' ? 'Digital' : 'Fysisk'
+                  }}{{ row.order.quantity > 1 ? ', ' + row.order.quantity + ' st' : '' }},
+                  {{ row.status }}
+                </span>
+              </td>
+              <td class="num">
+                {{ row.order.grossOre | sek }}
+                @if (row.order.refundedOre > 0) {
+                  <span class="sub">−{{ row.order.refundedOre | sek }} åter</span>
+                }
+              </td>
+              <td class="num muted">{{ row.economics.vatOre | sek }}</td>
+              <td class="num muted">{{ row.order.paymentFeeOre | sek: 'precise' }}</td>
+              <td class="num muted">{{ row.order.cogsOre + row.order.shippingOre | sek }}</td>
+              <td class="num muted">{{ row.order.adCostOre | sek }}</td>
+              <td
+                class="num result"
+                [class.gain]="row.economics.contributionOre > 0"
+                [class.loss]="row.economics.contributionOre < 0"
+              >
+                {{ row.economics.contributionOre | signedSek }}
+              </td>
+              <td class="margin">
+                <span class="margin-value" [class.loss]="(row.economics.marginBp ?? 0) < 0">{{
+                  row.economics.marginBp | bp
+                }}</span>
+                <span class="margin-track" aria-hidden="true">
+                  <span class="margin-zero" [style.left.%]="zeroAt"></span>
+                  @if (row.bar; as bar) {
+                    <span
+                      class="margin-bar"
+                      [class.negative]="bar.negative"
+                      [style.left.%]="bar.start"
+                      [style.width.%]="bar.width"
+                    ></span>
+                  }
+                </span>
+              </td>
+            } @else {
+              <td class="product product--compact">
+                {{ row.order.productTitle }}
+                @if (row.order.quantity > 1) {
+                  <span class="qty">{{ row.order.quantity }} st</span>
+                }
+                @if (row.order.status === 'REFUNDED') {
+                  <span class="qty">återbetald</span>
+                }
+              </td>
+              <td class="num muted">{{ row.economics.variableCostOre | sek }}</td>
+              <td
+                class="num result"
+                [class.gain]="row.economics.contributionOre > 0"
+                [class.loss]="row.economics.contributionOre < 0"
+              >
+                {{ row.economics.contributionOre | signedSek }}
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="detailed() ? 9 : 4" class="empty">
+              Inga ordrar ännu den här veckan.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (linkToAll()) {
+    @if (total() > rows().length) {
+      <a class="btn btn--quiet btn--sm more" routerLink="/ordrar">Visa alla {{ total() }} ordrar</a>
+    }
+  } @else if (total() > rows().length || showAll()) {
+    <button class="btn btn--quiet btn--sm more" type="button" (click)="showAll.set(!showAll())">
+      {{ showAll() ? 'Visa färre' : 'Visa alla ' + total() + ' ordrar' }}
+    </button>
+  }
+</section>

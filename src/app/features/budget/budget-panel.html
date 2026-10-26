@@ -1,0 +1,115 @@
+<section class="panel" aria-labelledby="budget-title">
+  <div class="panel-head">
+    <h2 class="panel-title" id="budget-title">Veckobudget</h2>
+    @if (budget(); as b) {
+      <p class="panel-note">
+        Hård gräns {{ b.totals.limitOre | sek }}
+        @if (b.status.limitCeilingOre !== null) {
+          (tak {{ b.status.limitCeilingOre | sek }})
+        }
+      </p>
+    }
+  </div>
+
+  @if (budget(); as b) {
+    <p class="remaining">
+      <span class="remaining-value">{{ b.remainingOre | sek }}</span>
+      <span class="remaining-label">kvar fram till {{ resetsAt() }}</span>
+    </p>
+
+    @if (severity(); as s) {
+      <p class="severity" [attr.data-severity]="b.severity">
+        <app-icon [name]="s.icon" />{{ s.text }}
+      </p>
+    }
+
+    @if (meter(); as m) {
+      <div
+        class="meter"
+        role="meter"
+        aria-labelledby="budget-title"
+        aria-valuemin="0"
+        [attr.aria-valuemax]="b.totals.limitOre"
+        [attr.aria-valuenow]="m.usedOre"
+        [attr.aria-valuetext]="m.text"
+        [attr.data-severity]="b.severity"
+      >
+        <span class="meter-settled" [style.width.%]="m.settled"></span>
+        @if (m.reserved > 0) {
+          <span class="meter-reserved" [style.width.%]="m.reserved"></span>
+        }
+        <span class="meter-warn" aria-hidden="true" [style.left.%]="m.warnAt"></span>
+      </div>
+      <dl class="legend">
+        <div>
+          <dt>
+            <span class="swatch swatch--settled" [attr.data-severity]="b.severity"></span>Förbrukat
+          </dt>
+          <dd>{{ b.totals.settledOre | sek }}</dd>
+        </div>
+        <div>
+          <dt>
+            <span class="swatch swatch--reserved" [attr.data-severity]="b.severity"></span
+            >Reserverat
+          </dt>
+          <dd>{{ b.totals.reservedOre | sek }}</dd>
+        </div>
+        <div>
+          <dt><span class="swatch swatch--warn"></span>Varning vid</dt>
+          <dd>{{ b.status.warnAtBp | bp }}</dd>
+        </div>
+      </dl>
+    }
+
+    <h3 class="subhead">Per kategori</h3>
+    <ul class="categories">
+      @for (category of categories(); track category.category) {
+        <li class="category">
+          <span class="category-label">{{ category.label }}</span>
+          <span class="category-value">
+            {{ category.settledOre | sek: 'auto' }}
+            @if (category.reservedOre > 0) {
+              <span class="category-held"
+                >+ {{ category.reservedOre | sek: 'auto' }} reserverat</span
+              >
+            }
+          </span>
+          <span class="bar" aria-hidden="true">
+            <span class="bar-settled" [style.width.%]="category.settledShare"></span>
+            @if (category.reservedShare > 0) {
+              <span class="bar-reserved" [style.width.%]="category.reservedShare"></span>
+            }
+          </span>
+        </li>
+      }
+    </ul>
+
+    <dl class="stats">
+      <div>
+        <dt>Tokens in</dt>
+        <dd>{{ b.status.tokens.input | int }}</dd>
+      </div>
+      <div>
+        <dt>Tokens ut</dt>
+        <dd>{{ b.status.tokens.output | int }}</dd>
+      </div>
+      <div>
+        <dt>Betalda anrop</dt>
+        <dd>{{ b.status.apiCalls | int }}</dd>
+      </div>
+      <div>
+        <dt>Stoppade av spärren</dt>
+        <dd>{{ b.status.deniedRequests | int }}</dd>
+      </div>
+    </dl>
+
+    @if (runway(); as r) {
+      <p class="runway">
+        <app-icon name="clock" />Med nuvarande takt, {{ r.rate }} per timme, räcker budgeten
+        {{ r.text }}.
+      </p>
+    }
+  } @else {
+    <p class="empty">Budgeten visas när läget har hämtats.</p>
+  }
+</section>

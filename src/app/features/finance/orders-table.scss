@@ -1,0 +1,165 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+// Compact: four fixed columns, product names truncated to one line.
+.table {
+  min-width: 420px;
+  table-layout: fixed;
+
+  th:nth-child(1) {
+    width: 96px;
+  }
+
+  th:nth-child(3),
+  th:nth-child(4) {
+    width: 112px;
+  }
+
+  td {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+}
+
+// Detailed: every cost line, so the columns size to their figures.
+:host(.is-detailed) .table {
+  min-width: 900px;
+  table-layout: auto;
+
+  th:nth-child(n) {
+    width: auto;
+  }
+
+  td {
+    padding-top: 11px;
+    padding-bottom: 11px;
+  }
+}
+
+tbody tr {
+  transition: background-color 120ms ease-out;
+
+  &:hover {
+    background: color-mix(in srgb, var(--bezel-raised) 70%, transparent);
+  }
+}
+
+.time {
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.product--compact {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product {
+  min-width: 240px;
+}
+
+.product-title {
+  display: block;
+}
+
+.product-meta,
+.sub {
+  display: block;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.qty {
+  margin-left: 6px;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.muted {
+  color: var(--ink-2);
+}
+
+.result {
+  font-weight: 600;
+
+  &.gain {
+    color: var(--normal);
+  }
+
+  &.loss {
+    color: var(--warning);
+  }
+}
+
+.refunded .product {
+  color: var(--ink-2);
+}
+
+.refunded .product-title {
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-3);
+}
+
+.margin {
+  white-space: nowrap;
+}
+
+// Inline blocks, not flex: a flex <td> stops being a table cell and loses the row rule.
+.margin-value {
+  display: inline-block;
+  width: 56px;
+  text-align: right;
+  vertical-align: middle;
+
+  &.loss {
+    color: var(--warning);
+  }
+}
+
+.margin-track {
+  position: relative;
+  display: inline-block;
+  width: 72px;
+  height: 6px;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.margin-zero {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+
+.margin-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--info-mark);
+  border-radius: 0 999px 999px 0;
+
+  &.negative {
+    background: var(--warning-mark);
+    border-radius: 999px 0 0 999px;
+  }
+}
+
+@keyframes arrive {
+  from {
+    background: color-mix(in srgb, var(--info-held) 45%, transparent);
+  }
+}
+
+tr.fresh td {
+  animation: arrive 2.4s ease-in-out;
+}
+
+.more {
+  margin-top: 10px;
+  text-decoration: none;
+}

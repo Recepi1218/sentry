@@ -1,0 +1,91 @@
+<section class="panel" aria-labelledby="approvals-title">
+  <div class="panel-head">
+    <h2 class="panel-title" id="approvals-title">Väntar på ditt beslut</h2>
+    <p class="panel-note">{{ rows().length }} förslag</p>
+  </div>
+
+  <ul class="items">
+    @for (row of visible(); track row.approval.id) {
+      <li class="item">
+        <p class="origin">
+          {{ row.kind }} från {{ row.from }}, {{ row.approval.createdAt | ago: store.now() }}
+        </p>
+        <h3 class="title">{{ row.approval.title }}</h3>
+        <p class="summary">{{ row.approval.summary }}</p>
+        <dl class="facts">
+          @if (row.approval.proposedLimitOre !== null) {
+            <div>
+              <dt>Ny veckogräns</dt>
+              <dd>{{ row.approval.proposedLimitOre | sek }}</dd>
+            </div>
+            <div>
+              <dt>Nu</dt>
+              <dd>{{ currentLimitOre() | sek }}</dd>
+            </div>
+          } @else {
+            <div>
+              <dt>Kostnad</dt>
+              <dd>
+                @if (row.approval.costOre > 0) {
+                  {{ row.approval.costOre | sek }} ur veckobudgeten
+                } @else {
+                  Ingen direkt kostnad
+                }
+              </dd>
+            </div>
+            @if (row.approval.expectedMarginBp !== null) {
+              <div>
+                <dt>Beräknad marginal</dt>
+                <dd>{{ row.approval.expectedMarginBp | bp }}</dd>
+              </div>
+            }
+          }
+        </dl>
+        <div class="decide">
+          <button
+            class="btn btn--sm"
+            type="button"
+            [disabled]="row.pending !== null || row.blocker !== null"
+            [attr.aria-describedby]="row.blocker ? 'blocker-' + row.approval.id : null"
+            (click)="store.decide(row.approval.id, 'APPROVE')"
+          >
+            @if (row.pending === 'APPROVE') {
+              <span class="spinner" aria-hidden="true"></span>Godkänner
+            } @else {
+              Godkänn
+            }
+          </button>
+          <button
+            class="btn btn--sm btn--quiet"
+            type="button"
+            [disabled]="row.pending !== null"
+            (click)="store.decide(row.approval.id, 'REJECT')"
+          >
+            @if (row.pending === 'REJECT') {
+              <span class="spinner" aria-hidden="true"></span>Avvisar
+            } @else {
+              Avvisa
+            }
+          </button>
+        </div>
+        @if (row.blocker) {
+          <p class="blocker" [id]="'blocker-' + row.approval.id">{{ row.blocker }}</p>
+        }
+        @if (row.error) {
+          <p class="error" role="alert">{{ row.error }}</p>
+        }
+      </li>
+    } @empty {
+      <li class="empty">
+        Inga förslag väntar. Nya produkter och kampanjer från agenterna hamnar här, och inget av dem
+        startar innan du har godkänt det.
+      </li>
+    }
+  </ul>
+
+  @if (visible().length < rows().length) {
+    <a class="btn btn--quiet btn--sm more" routerLink="/forslag">
+      Visa alla {{ rows().length }} förslag
+    </a>
+  }
+</section>

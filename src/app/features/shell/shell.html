@@ -1,0 +1,30 @@
+<app-top-bar />
+
+@if (store.needsToken()) {
+  <main class="connect" id="main" tabindex="-1">
+    <app-connect-panel />
+  </main>
+} @else {
+  <div class="layout">
+    <app-side-nav class="menu" />
+
+    <main class="main" id="main" tabindex="-1" #main>
+      <app-master-switch />
+
+      @if (store.snapshot()) {
+        <router-outlet />
+      } @else {
+        <div class="panel waiting" role="status">
+          @if (store.sync().phase === 'error') {
+            <p>{{ store.sync().error }}</p>
+            <button class="btn" type="button" (click)="store.refresh()">
+              <app-icon name="refresh" />Försök igen
+            </button>
+          } @else {
+            <p class="loading"><span class="spinner" aria-hidden="true"></span>Hämtar läget</p>
+          }
+        </div>
+      }
+    </main>
+  </div>
+}

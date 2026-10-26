@@ -1,0 +1,114 @@
+<section class="panel" aria-labelledby="pl-title">
+  <div class="panel-head">
+    <h3 class="panel-title" id="pl-title">Resultat denna vecka</h3>
+    <p class="panel-note">Från måndag 00:00</p>
+  </div>
+
+  <div class="layout">
+    @if (finance(); as f) {
+      <div>
+        <dl class="statement">
+          <div class="line total">
+            <dt>Omsättning exkl. moms</dt>
+            <dd>{{ f.netSalesOre | sek }}</dd>
+          </div>
+          <div class="line">
+            <dt>Inköp</dt>
+            <dd>{{ -f.cogsOre | signedSek }}</dd>
+          </div>
+          <div class="line">
+            <dt>Frakt</dt>
+            <dd>{{ -f.shippingOre | signedSek }}</dd>
+          </div>
+          <div class="line">
+            <dt>Stripe-avgifter</dt>
+            <dd>{{ -f.paymentFeesOre | signedSek }}</dd>
+          </div>
+          <div class="line">
+            <dt>Annonser</dt>
+            <dd>{{ -f.adSpendOre | signedSek }}</dd>
+          </div>
+          <div class="line total">
+            <dt>
+              Täckningsbidrag <span class="note">{{ marginBp() | bp }}</span>
+            </dt>
+            <dd>{{ f.contributionOre | signedSek }}</dd>
+          </div>
+          <div class="line">
+            <dt>AI-tokens</dt>
+            <dd>{{ -f.aiCostOre | signedSek: 'auto' }}</dd>
+          </div>
+          <div class="line">
+            <dt>API-anrop</dt>
+            <dd>{{ -f.apiCostOre | signedSek: 'auto' }}</dd>
+          </div>
+          <div class="line">
+            <dt>Verktyg, veckans andel</dt>
+            <dd>{{ -f.toolCostOre | signedSek }}</dd>
+          </div>
+          <div class="line result" [class.loss]="f.netResultOre < 0">
+            <dt>{{ f.netResultOre < 0 ? 'Förlust' : 'Vinst' }}</dt>
+            <dd>{{ f.netResultOre | signedSek }}</dd>
+          </div>
+        </dl>
+        @if (f.refundsOre > 0) {
+          <p class="footnote">
+            Omsättningen är räknad efter återbetalningar på {{ f.refundsOre | sek }}.
+          </p>
+        }
+      </div>
+    }
+
+    @if (costs(); as c) {
+      <div class="costs">
+        <h4 class="subhead">AI-modeller denna vecka</h4>
+        <table class="table compact">
+          <thead>
+            <tr>
+              <th scope="col">Modell</th>
+              <th scope="col" class="num">Anrop</th>
+              <th scope="col" class="num">Tokens</th>
+              <th scope="col" class="num">Kostnad</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (model of c.models; track model.model) {
+              <tr>
+                <td>{{ model.label }}</td>
+                <td class="num">{{ model.calls | int }}</td>
+                <td class="num">{{ model.inputTokens + model.outputTokens | int }}</td>
+                <td class="num">{{ model.costOre | sek: 'auto' }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty">Inga AI-anrop den här veckan.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <h4 class="subhead">Verktyg, {{ monthlyTools() | sek }} per månad</h4>
+        <table class="table compact">
+          <thead>
+            <tr>
+              <th scope="col">Verktyg</th>
+              <th scope="col" class="num">Per månad</th>
+              <th scope="col" class="num">Veckans andel</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (tool of c.tools; track tool.id) {
+              <tr>
+                <td>
+                  {{ tool.name }}<span class="plan">{{ tool.plan }}</span>
+                </td>
+                <td class="num">{{ tool.monthlyOre | sek }}</td>
+                <td class="num">{{ tool.weekShareOre | sek }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

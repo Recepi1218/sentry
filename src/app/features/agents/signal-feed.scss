@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+
+.explain {
+  max-width: 64ch;
+  margin: -6px 0 12px;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.feed {
+  display: grid;
+}
+
+.handoff {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 2px 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.time {
+  grid-row: span 3;
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
+
+.route {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+}
+
+.code {
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.subject {
+  color: var(--ink-2);
+}
+
+.via {
+  color: var(--ink-3);
+  font-size: var(--t-xs);
+}
